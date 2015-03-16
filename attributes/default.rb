@@ -198,3 +198,12 @@ default['docker']['registry_cmd_timeout'] = 60
 
 # DEPRECATED: will be removed in chef-docker 1.0
 default['docker']['restart'] = false if node['docker']['container_init_type']
+
+default['docker']['service_systemd_directory'] = value_for_platform(
+  %w(debian) => {
+    %w(8.0) => '/etc/systemd/system',
+  },
+  'default' => '/usr/lib/systemd/system'
+)
+default['docker']['service_sysv_directory'] = '/etc/init.d'
+default['docker']['service_upstart_directory'] = '/etc/init'

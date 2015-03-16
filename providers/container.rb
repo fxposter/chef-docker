@@ -460,8 +460,12 @@ def service_create_runit
   end.run_action(:enable)
 end
 
+def service_systemd_directory
+  new_resource.service_systemd_directory
+end
+
 def service_create_systemd
-  template "/usr/lib/systemd/system/#{service_name}.socket" do
+  template "#{service_systemd_directory}/#{service_name}.socket" do
     if new_resource.socket_template.nil?
       source 'docker-container.socket.erb'
     else
@@ -479,7 +483,7 @@ def service_create_systemd
     action :nothing
   end.run_action(:create)
 
-  template "/usr/lib/systemd/system/#{service_name}.service" do
+  template "#{service_systemd_directory}/#{service_name}.service" do
     source service_template
     cookbook new_resource.cookbook
     mode '0644'
@@ -493,8 +497,12 @@ def service_create_systemd
   end.run_action(:create)
 end
 
+def service_sysv_directory
+  new_resource.service_sysv_directory
+end
+
 def service_create_sysv
-  template "/etc/init.d/#{service_name}" do
+  template "#{service_sysv_directory}/#{service_name}" do
     source service_template
     cookbook new_resource.cookbook
     mode '0755'
@@ -514,6 +522,10 @@ def service_create_sysv
   # end.run_action(:create)
 end
 
+def service_upstart_directory
+  new_resource.service_upstart_directory
+end
+
 def service_create_upstart
   # The upstart init script requires inotifywait, which is in inotify-tools
   # For clarity, install the package here but do it only once (no CHEF-3694).
@@ -526,7 +538,7 @@ def service_create_upstart
     end.run_action(:install)
   end
 
-  template "/etc/init/#{service_name}.conf" do
+  template "#{service_upstart_directory}/#{service_name}.conf" do
     source service_template
     cookbook new_resource.cookbook
     mode '0600'
@@ -567,7 +579,7 @@ def service_remove_systemd
   service_stop_and_disable
 
   %w(service socket).each do |f|
-    file "/usr/lib/systemd/system/#{service_name}.#{f}" do
+    file "#{service_systemd_directory}/#{service_name}.#{f}" do
       action :delete
     end
   end
@@ -576,7 +588,7 @@ end
 def service_remove_sysv
   service_stop_and_disable
 
-  file "/etc/init.d/#{service_name}" do
+  file "#{service_sysv_directory}/#{service_name}" do
     action :delete
   end
 end
@@ -584,7 +596,7 @@ end
 def service_remove_upstart
   service_stop_and_disable
 
-  file "/etc/init/#{service_name}.conf" do
+  file "#{service_upstart_directory}/#{service_name}.conf" do
     action :delete
   end
 end
