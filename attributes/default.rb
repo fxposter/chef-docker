@@ -198,3 +198,10 @@ default['docker']['registry_cmd_timeout'] = 60
 
 # DEPRECATED: will be removed in chef-docker 1.0
 default['docker']['restart'] = false if node['docker']['container_init_type']
+
+default['docker']['sysctl_path'] = value_for_platform(
+  %w(debian) => {
+    %w(8.0) => '/sbin/sysctl',
+  },
+  'default' => '/usr/sbin/sysctl'
+)
