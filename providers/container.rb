@@ -461,23 +461,23 @@ def service_create_runit
 end
 
 def service_create_systemd
-  template "/usr/lib/systemd/system/#{service_name}.socket" do
-    if new_resource.socket_template.nil?
-      source 'docker-container.socket.erb'
-    else
-      source new_resource.socket_template
-    end
-    cookbook new_resource.cookbook
-    mode '0644'
-    owner 'root'
-    group 'root'
-    variables(
-      :service_name => service_name,
-      :sockets => sockets
-    )
-    not_if { port.empty? }
-    action :nothing
-  end.run_action(:create)
+  # template "/usr/lib/systemd/system/#{service_name}.socket" do
+  #   if new_resource.socket_template.nil?
+  #     source 'docker-container.socket.erb'
+  #   else
+  #     source new_resource.socket_template
+  #   end
+  #   cookbook new_resource.cookbook
+  #   mode '0644'
+  #   owner 'root'
+  #   group 'root'
+  #   variables(
+  #     :service_name => service_name,
+  #     :sockets => sockets
+  #   )
+  #   not_if { port.empty? }
+  #   action :nothing
+  # end.run_action(:create)
 
   template "/usr/lib/systemd/system/#{service_name}.service" do
     source service_template
