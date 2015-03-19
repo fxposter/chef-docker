@@ -61,3 +61,7 @@ attribute :user, :kind_of => [String]
 attribute :volume, :kind_of => [String, Array]
 attribute :volumes_from, :kind_of => [String]
 attribute :working_directory, :kind_of => [String]
+
+attribute :service_systemd_directory, :kind_of => [String], :default => node['docker']['service_systemd_directory']
+attribute :service_sysv_directory, :kind_of => [String], :default => node['docker']['service_sysv_directory']
+attribute :service_upstart_directory, :kind_of => [String], :default => node['docker']['service_upstart_directory']
