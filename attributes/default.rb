@@ -207,3 +207,10 @@ default['docker']['service_systemd_directory'] = value_for_platform(
 )
 default['docker']['service_sysv_directory'] = '/etc/init.d'
 default['docker']['service_upstart_directory'] = '/etc/init'
+
+default['docker']['sysctl_path'] = value_for_platform(
+  %w(debian) => {
+    %w(8.0) => '/sbin/sysctl',
+  },
+  'default' => '/usr/sbin/sysctl'
+)
