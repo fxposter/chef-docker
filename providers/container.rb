@@ -465,7 +465,7 @@ def service_systemd_directory
 end
 
 def service_create_systemd
-  # template "#{service_systemd_directory}/#{service_name}.socket" do
+  # socket_resource = template "#{service_systemd_directory}/#{service_name}.socket" do
   #   if new_resource.socket_template.nil?
   #     source 'docker-container.socket.erb'
   #   else
@@ -481,9 +481,10 @@ def service_create_systemd
   #   )
   #   not_if { port.empty? }
   #   action :nothing
-  # end.run_action(:create)
+  # end
+  # socket_resource.run_action(:create)
 
-  template "#{service_systemd_directory}/#{service_name}.service" do
+  service_resource = template "#{service_systemd_directory}/#{service_name}.service" do
     source service_template
     cookbook new_resource.cookbook
     mode '0644'
@@ -494,7 +495,21 @@ def service_create_systemd
       :service_name => service_name
     )
     action :nothing
-  end.run_action(:create)
+  end
+  service_resource.run_action(:create)
+
+  if service_resource.updated_by_last_action?
+    reload_resource =
+      begin
+        run_context.resource_collection.find(:execute => 'systemctl-daemon-reload')
+      rescue Chef::Exceptions::ResourceNotFound
+        execute 'systemctl-daemon-reload' do
+          command '/bin/systemctl --system daemon-reload'
+          action :nothing
+        end
+      end
+    reload_resource.run_action(:run)
+  end
 end
 
 def service_sysv_directory
