@@ -86,6 +86,8 @@ module DockerCookbook
     property :volumes_from, ArrayType
     property :working_dir, [String, NilClass], default: ''
 
+    property :shm_size, [Fixnum, nil], default: nil
+
     # Used to store the bind property since binds is an alias to volumes
     property :volumes_binds, Array
 
@@ -283,6 +285,7 @@ module DockerCookbook
               'VolumesFrom'     => volumes_from
             }
           }
+          config['HostConfig']['ShmSize'] = shm_size if shm_size
           Docker::Container.create(config, connection)
         end
       end
