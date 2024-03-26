@@ -73,7 +73,7 @@ module DockerCookbook
     property :restart_maximum_retry_count, Fixnum, default: 0
     property :restart_policy, String, default: 'no'
     property :ro_rootfs, Boolean, default: false
-    property :security_opts, [String, ArrayType]
+    property :security_opts, [String, Array], coerce: proc { |v| v.nil? ? nil : Array(v) }
     property :signal, String, default: 'SIGTERM'
     property :stdin_once, Boolean, default: false, desired_state: false
     property :timeout, [Fixnum, nil], desired_state: false
@@ -282,7 +282,8 @@ module DockerCookbook
               'Ulimits'         => ulimits_to_hash,
               'UsernsMode'      => userns_mode,
               'UTSMode'         => uts_mode,
-              'VolumesFrom'     => volumes_from
+              'VolumesFrom'     => volumes_from,
+              'SecurityOpt'     => security_opts
             }
           }
           config['HostConfig']['ShmSize'] = shm_size if shm_size
